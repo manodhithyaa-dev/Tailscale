@@ -1,0 +1,167 @@
+# ============================================================
+# Node.js
+# ============================================================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Package manager files
+.npm/
+.yarn/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+.vite/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Keep example environment files
+!.env.example
+
+
+# ============================================================
+# React
+# ============================================================
+
+# React build
+/build/
+/dist/
+
+# React/Vite cache
+.vite/
+.cache/
+
+
+# ============================================================
+# Python
+# ============================================================
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python virtual environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.coverage.xml
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Python tooling
+.mypy_cache/
+.pyre/
+.ruff_cache/
+.pytype/
+
+# Pip
+pip-wheel-metadata/
+
+# Poetry
+.poetry/
+
+# Hatch
+.hatch/
+
+
+# ============================================================
+# IDE / Editors
+# ============================================================
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# JetBrains
+.idea/
+*.iml
+
+# Sublime
+*.sublime-workspace
+*.sublime-project
+
+
+# ============================================================
+# Operating System
+# ============================================================
+
+# Linux
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+Desktop.ini
+
+
+# ============================================================
+# Logs
+# ============================================================
+
+*.log
+logs/
+
+
+# ============================================================
+# Temporary files
+# ============================================================
+
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+
+
+# ============================================================
+# Secrets / Credentials
+# ============================================================
+
+*.pem
+*.key
+*.crt
+
+# Local config
+.env
+.env.*
+!.env.example
