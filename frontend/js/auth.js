@@ -1,0 +1,8 @@
+
+document.addEventListener("DOMContentLoaded",()=>{
+ document.querySelectorAll(".toggle-pass").forEach(b=>b.onclick=()=>{const i=b.parentElement.querySelector("input");i.type=i.type==="password"?"text":"password"});
+ document.querySelectorAll(".role-option").forEach(o=>o.onclick=()=>{document.querySelectorAll(".role-option").forEach(x=>x.classList.remove("selected"));o.classList.add("selected");o.querySelector("input").checked=true});
+ const p=document.getElementById("signupPassword"); if(p)p.addEventListener("input",()=>document.getElementById("strengthBar").style.width=Math.min(100,p.value.length*10)+"%");
+ const login=document.getElementById("loginForm"); if(login)login.onsubmit=e=>{e.preventDefault();const existing=JSON.parse(localStorage.getItem("nimbusUser")||"null");const name=existing?.name||document.getElementById("loginUser").value.split("@")[0]||"Admin User";localStorage.setItem("nimbusUser",JSON.stringify(existing||{name,role:"Administrator"}));localStorage.setItem("nimbusLoggedIn","true");location.href="dashboard.html"};
+ const signup=document.getElementById("signupForm");if(signup)signup.onsubmit=e=>{e.preventDefault();if(document.getElementById("signupPassword").value!==document.getElementById("signupConfirm").value){alert("Passwords do not match.");return}const role=document.querySelector('input[name="role"]:checked').value;localStorage.setItem("nimbusUser",JSON.stringify({name:document.getElementById("signupName").value,username:document.getElementById("signupUsername").value,email:document.getElementById("signupEmail").value,role}));localStorage.setItem("nimbusLoggedIn","true");location.href="dashboard.html"};
+});

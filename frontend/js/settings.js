@@ -1,0 +1,2 @@
+
+document.addEventListener("DOMContentLoaded",()=>{const u=JSON.parse(localStorage.getItem("nimbusUser")||"{}");document.getElementById("settingsName").value=u.name||"";document.getElementById("settingsEmail").value=u.email||"";document.getElementById("settingsRole").value=u.role||"Administrator";document.getElementById("saveProfileBtn").onclick=()=>{u.name=document.getElementById("settingsName").value;u.email=document.getElementById("settingsEmail").value;localStorage.setItem("nimbusUser",JSON.stringify(u));toast("Profile updated")}})

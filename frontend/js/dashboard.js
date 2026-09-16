@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>{ /* Future live dashboard API integration goes here. */ });
