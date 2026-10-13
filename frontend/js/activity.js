@@ -1,4 +1,16 @@
-
-const activities=[{user:"Admin User",action:"Instance Restarted",resource:"web-server-01",time:"Sep 08, 2026, 2:20 PM",status:"Success"},{user:"Developer",action:"File Uploaded",resource:"project-report.pdf",time:"Sep 08, 2026, 1:45 PM",status:"Success"},{user:"Admin User",action:"Database Created",resource:"analytics",time:"Sep 07, 2026, 6:10 PM",status:"Success"},{user:"Viewer",action:"SQL Query Executed",resource:"app-prod",time:"Sep 07, 2026, 4:35 PM",status:"Success"},{user:"Developer",action:"Instance Deleted",resource:"worker-old",time:"Sep 06, 2026, 11:20 AM",status:"Failed"}];
-function renderActivity(){const q=(document.getElementById("activitySearch").value||"").toLowerCase(),u=document.getElementById("activityUserFilter").value,a=document.getElementById("activityActionFilter").value,s=document.getElementById("activityStatusFilter").value;let r=activities.filter(x=>(!q||Object.values(x).join(" ").toLowerCase().includes(q))&&(!u||x.user===u)&&(!a||x.action===a)&&(!s||x.status===s));document.getElementById("activityTableBody").innerHTML=r.map(x=>`<tr><td>${x.user}</td><td>${x.action}</td><td>${x.resource}</td><td>${x.time}</td><td><span class="badge ${x.status.toLowerCase()}">${x.status}</span></td></tr>`).join("");document.getElementById("activityEmptyState").style.display=r.length?"none":"block"}
-document.addEventListener("DOMContentLoaded",()=>{const users=[...new Set(activities.map(x=>x.user))],acts=[...new Set(activities.map(x=>x.action))];document.getElementById("activityUserFilter").innerHTML='<option value="">All users</option>'+users.map(x=>`<option>${x}</option>`).join("");document.getElementById("activityActionFilter").innerHTML='<option value="">All actions</option>'+acts.map(x=>`<option>${x}</option>`).join("");["activitySearch","activityUserFilter","activityActionFilter","activityStatusFilter","activityDateFilter"].forEach(id=>document.getElementById(id).addEventListener("input",renderActivity));renderActivity()})
+let activities = [];
+const $ = id => document.getElementById(id);
+function fill(id, label, vals) { const el = $(id), cur = el.value; el.innerHTML = `<option value="">${label}</option>` + vals.map(v => `<option>${esc(v)}</option>`).join(""); el.value = cur; }
+function render() {
+  const q = ($("activitySearch").value || "").toLowerCase(), u = $("activityUserFilter").value, a = $("activityActionFilter").value, s = $("activityStatusFilter").value, d = $("activityDateFilter").value;
+  const r = activities.filter(x => (!q || Object.values(x).join(" ").toLowerCase().includes(q)) && (!u || x.username === u) && (!a || x.action === a) && (!s || x.status === s) && (!d || new Date(x.created_at).toLocaleDateString("en-CA") === d));
+  $("activityTableBody").innerHTML = r.map(x => `<tr><td>${esc(x.username)}</td><td>${esc(x.action)}</td><td>${esc(x.resource)}</td><td>${esc(fmtTime(x.created_at))}</td><td><span class="badge ${x.status === "Success" ? "success" : "failed"}">${esc(x.status)}</span></td></tr>`).join("");
+  $("activityEmptyState").style.display = r.length ? "none" : "block";
+}
+document.addEventListener("DOMContentLoaded", async () => {
+  try { await nimbusReady; } catch (e) { return; }
+  ["activitySearch", "activityUserFilter", "activityActionFilter", "activityStatusFilter", "activityDateFilter"].forEach(id => $(id).addEventListener("input", render));
+  try { activities = (await api("/activity?limit=500")).activity; } catch (e) { toast(e.message, "error"); }
+  fill("activityUserFilter", "All users", [...new Set(activities.map(x => x.username))]); fill("activityActionFilter", "All actions", [...new Set(activities.map(x => x.action))]);
+  render();
+});
