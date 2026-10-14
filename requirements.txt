@@ -1,2 +1,8 @@
-Flask
+fastapi
+uvicorn[standard]
+websockets
+python-multipart
+mysql-connector-python
+docker
+python-dotenv
 Werkzeug

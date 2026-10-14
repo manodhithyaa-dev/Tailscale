@@ -1,4 +1,85 @@
+let nimbusActivity = [];
 
-const activities=[{user:"Admin User",action:"Instance Restarted",resource:"web-server-01",time:"Sep 08, 2026, 2:20 PM",status:"Success"},{user:"Developer",action:"File Uploaded",resource:"project-report.pdf",time:"Sep 08, 2026, 1:45 PM",status:"Success"},{user:"Admin User",action:"Database Created",resource:"analytics",time:"Sep 07, 2026, 6:10 PM",status:"Success"},{user:"Viewer",action:"SQL Query Executed",resource:"app-prod",time:"Sep 07, 2026, 4:35 PM",status:"Success"},{user:"Developer",action:"Instance Deleted",resource:"worker-old",time:"Sep 06, 2026, 11:20 AM",status:"Failed"}];
-function renderActivity(){const q=(document.getElementById("activitySearch").value||"").toLowerCase(),u=document.getElementById("activityUserFilter").value,a=document.getElementById("activityActionFilter").value,s=document.getElementById("activityStatusFilter").value;let r=activities.filter(x=>(!q||Object.values(x).join(" ").toLowerCase().includes(q))&&(!u||x.user===u)&&(!a||x.action===a)&&(!s||x.status===s));document.getElementById("activityTableBody").innerHTML=r.map(x=>`<tr><td>${x.user}</td><td>${x.action}</td><td>${x.resource}</td><td>${x.time}</td><td><span class="badge ${x.status.toLowerCase()}">${x.status}</span></td></tr>`).join("");document.getElementById("activityEmptyState").style.display=r.length?"none":"block"}
-document.addEventListener("DOMContentLoaded",()=>{const users=[...new Set(activities.map(x=>x.user))],acts=[...new Set(activities.map(x=>x.action))];document.getElementById("activityUserFilter").innerHTML='<option value="">All users</option>'+users.map(x=>`<option>${x}</option>`).join("");document.getElementById("activityActionFilter").innerHTML='<option value="">All actions</option>'+acts.map(x=>`<option>${x}</option>`).join("");["activitySearch","activityUserFilter","activityActionFilter","activityStatusFilter","activityDateFilter"].forEach(id=>document.getElementById(id).addEventListener("input",renderActivity));renderActivity()})
+function withinDate(timestamp, range) {
+  if (!range || range === "all") return true;
+  const created = new Date(timestamp).getTime();
+  if (Number.isNaN(created)) return true;
+  const now = Date.now();
+  const day = 86400000;
+  if (range === "today") return now - created <= day;
+  if (range === "week") return now - created <= 7 * day;
+  if (range === "month") return now - created <= 30 * day;
+  return true;
+}
+
+function renderActivity() {
+  const body = document.getElementById("activityTableBody");
+  const empty = document.getElementById("activityEmptyState");
+  if (!body) return;
+
+  const query = (document.getElementById("activitySearch")?.value || "").toLowerCase();
+  const userFilter = document.getElementById("activityUserFilter")?.value || "";
+  const actionFilter = document.getElementById("activityActionFilter")?.value || "";
+  const statusFilter = document.getElementById("activityStatusFilter")?.value || "";
+  const dateFilter = document.getElementById("activityDateFilter")?.value || "all";
+
+  const rows = nimbusActivity.filter(
+    (x) =>
+      (!query || Object.values(x).join(" ").toLowerCase().includes(query)) &&
+      (!userFilter || x.user === userFilter) &&
+      (!actionFilter || x.action === actionFilter) &&
+      (!statusFilter || x.status === statusFilter) &&
+      withinDate(x.timestamp, dateFilter)
+  );
+
+  body.innerHTML = rows
+    .map(
+      (x) => `<tr>
+      <td>${escapeHtml(x.user)}</td>
+      <td>${escapeHtml(x.action)}</td>
+      <td>${escapeHtml(x.resource)}</td>
+      <td>${escapeHtml(x.time)}</td>
+      <td><span class="badge ${String(x.status).toLowerCase()}">${escapeHtml(x.status)}</span></td>
+    </tr>`
+    )
+    .join("");
+  if (empty) empty.style.display = rows.length ? "none" : "block";
+}
+
+function populateFilters() {
+  const users = [...new Set(nimbusActivity.map((x) => x.user))];
+  const actions = [...new Set(nimbusActivity.map((x) => x.action))];
+  const userSelect = document.getElementById("activityUserFilter");
+  const actionSelect = document.getElementById("activityActionFilter");
+  if (userSelect)
+    userSelect.innerHTML =
+      '<option value="">All users</option>' + users.map((x) => `<option>${escapeHtml(x)}</option>`).join("");
+  if (actionSelect)
+    actionSelect.innerHTML =
+      '<option value="">All actions</option>' + actions.map((x) => `<option>${escapeHtml(x)}</option>`).join("");
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const user = await window.nimbusReady;
+  if (!user) return;
+
+  try {
+    const data = await NimbusAPI.get("/activity");
+    nimbusActivity = data.activity;
+  } catch (err) {
+    toast(err.message, "error");
+  }
+  populateFilters();
+
+  ["activitySearch", "activityUserFilter", "activityActionFilter", "activityStatusFilter", "activityDateFilter"].forEach(
+    (id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("input", renderActivity);
+        el.addEventListener("change", renderActivity);
+      }
+    }
+  );
+
+  renderActivity();
+});

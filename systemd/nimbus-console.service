@@ -1,0 +1,18 @@
+[Unit]
+Description=Nimbus Private Cloud Console
+After=network-online.target docker.service mysql.service
+Wants=network-online.target
+Requires=docker.service mysql.service
+
+[Service]
+Type=simple
+User=manodhithyaa-c-s
+WorkingDirectory=/home/manodhithyaa-c-s/Desktop/cloud_project/backend
+ExecStart=/home/manodhithyaa-c-s/Desktop/cloud_project/venv/bin/uvicorn console_server:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+Environment=PATH=/home/manodhithyaa-c-s/Desktop/cloud_project/venv/bin:/usr/bin:/bin
+EnvironmentFile=-/home/manodhithyaa-c-s/Desktop/cloud_project/backend/.env
+
+[Install]
+WantedBy=multi-user.target
